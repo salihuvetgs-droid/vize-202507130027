@@ -1,0 +1,43 @@
+-- SORGU 1: Toplam nesne kutusu sayısı
+-- Veri setindeki toplam kayıt sayısını gösterir.
+SELECT COUNT(*) AS toplam_kayit
+FROM kamera_verileri;
+
+-- SORGU 2: X ve Y koordinatlarının ortalaması
+-- Nesne kutularının başlangıç koordinatlarını inceler.
+SELECT
+    ROUND(AVG(bbox_xmin)::numeric, 2) AS ortalama_x,
+    ROUND(AVG(bbox_ymin)::numeric, 2) AS ortalama_y
+FROM kamera_verileri;
+
+-- SORGU 3: Koordinatların en küçük ve büyük değerleri
+SELECT
+    MIN(bbox_xmin) AS en_kucuk_x,
+    MAX(bbox_xmax) AS en_buyuk_x,
+    MIN(bbox_ymin) AS en_kucuk_y,
+    MAX(bbox_ymax) AS en_buyuk_y
+FROM kamera_verileri;
+
+-- SORGU 4: Görüntü başına nesne kutusu sayısı
+SELECT
+    image,
+    COUNT(*) AS nesne_sayisi
+FROM kamera_verileri
+GROUP BY image
+ORDER BY nesne_sayisi DESC;
+
+-- SORGU 5: Nesne kutularının boyut dağılımı
+SELECT
+    CASE
+        WHEN (bbox_xmax - bbox_xmin) *
+             (bbox_ymax - bbox_ymin) < 10000
+        THEN 'Kucuk'
+        WHEN (bbox_xmax - bbox_xmin) *
+             (bbox_ymax - bbox_ymin) < 30000
+        THEN 'Orta'
+        ELSE 'Buyuk'
+    END AS kutu_boyutu,
+    COUNT(*) AS nesne_sayisi
+FROM kamera_verileri
+GROUP BY kutu_boyutu
+ORDER BY nesne_sayisi DESC;
